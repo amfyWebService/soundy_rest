@@ -5,14 +5,21 @@ import BaseController from './BaseController';
 
 export class LoginBody {
     @IsEmail()
-    email: string;
+    username: string;
 
     @IsString()
     @MinLength(10)
     password: string;
 }
 
-export class RegisterBody extends LoginBody {
+export class RegisterBody {
+    @IsEmail()
+    mail: string;
+
+    @IsString()
+    @MinLength(10)
+    password: string;
+
     @IsDateString()
     birthday: Date;
 
@@ -30,13 +37,22 @@ export class AuthController extends BaseController {
     async register(
         @Body({ required: true, validate: true }) body: RegisterBody,
     ) {
-        return await MqService.query("register", body);
+        const res = await MqService.query("register", body);
+
+        return this.handleResponse(res, {
+            "user_already_exist": 400,
+            "entity_validation_error": 400
+        });
     }
 
     @Post("login")
     async login(
         @Body({ required: true, validate: true }) body: LoginBody,
     ) {
-        return await MqService.query("login", body);
+        const res = await MqService.query("login", body);
+
+        return this.handleResponse(res, {
+            "bad_username_password": 400,
+        });
     }
 }
