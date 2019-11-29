@@ -1,34 +1,50 @@
+import 'module-alias/register';
+import "reflect-metadata";
 import { Application } from 'express';
 import bodyParser from 'body-parser';
-import cors from 'cors';
-import "reflect-metadata";
-import config from './config';
-import multer from 'multer';
 import { createExpressServer } from 'routing-controllers';
+import multer from 'multer';
+import config from './config';
+import MqService from '@/core/MqService';
+import { logger } from '@/shared';
+import mLogger from 'morgan';
+import { CustomErrorHandler } from './core/middleware/CustomErrorHandler';
+
 
 class App {
   public app: Application;
-  public upload: multer.Instance
+  public upload: multer.Instance;
 
   constructor() {
     this.app = createExpressServer({
       cors: true,
       development: !config.isProd,
       middlewares: [
-        //Allows us to receive requests with data in json format
-        bodyParser.json({ limit: '50mb' }),
-        //Allows us to receive requests with data in x-www-form-urlencoded format
-        bodyParser.urlencoded({ limit: '50mb', extended: true })
+        CustomErrorHandler
       ],
       routePrefix: "/api",
       controllers: [__dirname + "/controllers/*.ts"],
     });
     this.upload = multer();
+    MqService.init(config.AMQP_URL);
+  }
 
-    this.app.listen(config.port);
+  setExpressConfig(){
+    this.app.use(mLogger('dev'));
+    //Allows us to receive requests with data in json format
+    this.app.use(bodyParser.json({ limit: '50mb' }));
+    //Allows us to receive requests with data in x-www-form-urlencoded format
+    this.app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+  }
 
-    console.log("Server listening on port: " + config.port);
+  run(){
+    this.app.listen(config.port, () => {
+      logger.info('Express server started on port: ' + config.port);
+    });
   }
 }
 
-export default new App().app;
+const app = new App();
+app.run();
+
+export default app;
