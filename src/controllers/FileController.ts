@@ -1,4 +1,4 @@
-import { JsonController, Post, Res, UploadedFiles, UseBefore, BadRequestError, InternalServerError } from "routing-controllers"
+import { JsonController, Post, Res, UploadedFiles, UseBefore, BadRequestError, InternalServerError, Authorized } from "routing-controllers"
 import { Response } from 'express'
 import config from '../config'
 import filesystem from 'fs'
@@ -7,6 +7,7 @@ import path from "path";
 import urljoin from "url-join";
 
 @JsonController("/")
+@Authorized()
 export class FileController {
     private dirMusic: string = urljoin(config.HOME_UPLOAD_DIR, "musics");
     private dirCover: string = urljoin(config.HOME_UPLOAD_DIR, "covers");
