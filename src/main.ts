@@ -33,7 +33,7 @@ class App {
         if (!action.request.headers["authorization"]) return false
 
         const token = action.request.headers["authorization"];
-        const res: QueueResponse = await MqService.query("authenticated", token);
+        const res: QueueResponse = await MqService.query("authenticate", token);
         if(res.error) return false;
 
         return true
