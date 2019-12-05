@@ -2,10 +2,10 @@ import 'module-alias/register';
 import "reflect-metadata";
 import { Application } from 'express';
 import bodyParser from 'body-parser';
-import { createExpressServer } from 'routing-controllers';
+import { createExpressServer, Action } from 'routing-controllers';
 import multer from 'multer';
 import config from './config';
-import MqService from '@/core/MqService';
+import MqService, { QueueResponse } from '@/core/MqService';
 import { logger } from '@/shared';
 import mLogger from 'morgan';
 import { CustomErrorHandler } from './core/middleware/CustomErrorHandler';
@@ -24,6 +24,20 @@ class App {
       ],
       routePrefix: "/api",
       controllers: [__dirname + "/controllers/*.ts"],
+      authorizationChecker: async (action: Action) => {
+        // here you can use request/response objects from action
+        // also if decorator defines roles it needs to access the action
+        // you can use them to provide granular access check
+        // checker must return either boolean (true or false)
+        // either promise that resolves a boolean value
+        if (!action.request.headers["authorization"]) return false
+
+        const token = action.request.headers["authorization"];
+        const res: QueueResponse = await MqService.query("authenticated", token);
+        if(res.error) return false;
+
+        return true
+    }
     });
     this.upload = multer();
     MqService.init(config.AMQP_URL);
