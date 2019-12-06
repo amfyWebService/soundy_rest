@@ -7,18 +7,11 @@ export class addTrackBody{
     @IsString()
     id: string;
     
-    @IsInt()
-    @Min(1)
-    duration: number;
-
     @IsString()
-    user_id: string;
-
+    title: string;
+    
     @IsString()
     cover_path: string;
-
-    @IsString()
-    track_path: string;
 }
 
 @JsonController("/")
@@ -32,7 +25,7 @@ export class TrackController extends BaseController {
 
         return this.handleResponse(res, {
             "track_already_exists": 400,
-            "invalid-input": 405
+            "invalid-input": 400
         })
     }
 }
