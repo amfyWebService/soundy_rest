@@ -2,7 +2,7 @@ import 'module-alias/register';
 import "reflect-metadata";
 import { Application } from 'express';
 import bodyParser from 'body-parser';
-import { createExpressServer, Action } from 'routing-controllers';
+import { createExpressServer, Action, UnauthorizedError } from 'routing-controllers';
 import multer from 'multer';
 import config from './config';
 import MqService, { QueueResponse } from '@/core/MqService';
@@ -24,26 +24,21 @@ export class App {
       ],
       routePrefix: "/api",
       controllers: [__dirname + "/controllers/*.ts"],
-      authorizationChecker: async (action: Action) => {
-        // here you can use request/response objects from action
-        // also if decorator defines roles it needs to access the action
-        // you can use them to provide granular access check
-        // checker must return either boolean (true or false)
-        // either promise that resolves a boolean value
-        if (!action.request.headers["authorization"]) return false
-
-        const token = action.request.headers["authorization"];
-        const res: QueueResponse = await MqService.query("authenticate", token);
-        if (res.error) return false;
-
-        return true
-      },
+      // authorizationChecker: async (action: Action) => await !!this.getUserFromRequest(action, "auth"),
       currentUserChecker: async (action: Action) => {
-        // here you can use request/response objects from action
-        // you need to provide a user object that will be injected in controller actions
-        // demo code:
+        // check if token is in headers
+        if (!action.request.headers["authorization"]) return false;
+
+        // get token and call service to verify token
         const token = action.request.headers["authorization"];
-        return await MqService.query("authenticate", token);
+        const res: QueueResponse = await MqService.query("authenticate", { token: token });
+        
+        // handle response
+        if (res.error) throw new UnauthorizedError();
+
+        action.request.soundy_user = res;
+
+        return res;
       }
     });
     this.upload = multer();
@@ -62,6 +57,26 @@ export class App {
     this.app.listen(config.port, () => {
       logger.info('Express server started on port: ' + config.port);
     });
+  }
+
+  async getUserFromRequest(action: Action, toto: string) {
+    console.log("coucou", toto, new Date().toISOString());
+    // if already loaded
+    if (action.request.soundy_user) return action.request.soundy_user;
+
+    // check if token is in headers
+    if (!action.request.headers["authorization"]) return false;
+
+    // get token and call service to verify token
+    const token = action.request.headers["authorization"];
+    const res: QueueResponse = await MqService.query("authenticate", { token: token });
+    console.log("bye", toto, new Date().toISOString());
+    // handle response
+    if (res.error) return false;
+
+    action.request.soundy_user = res;
+
+    return res;
   }
 }
 

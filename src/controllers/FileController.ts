@@ -7,31 +7,22 @@ import urljoin from "url-join";
 import { QueueResponse } from '@/core/MqService'
 
 @JsonController("/")
-@Authorized()
 export class FileController {
     private dirMusic: string = urljoin(config.HOME_UPLOAD_DIR, "musics");
     private dirCover: string = urljoin(config.HOME_UPLOAD_DIR, "covers");
 
     @Post("upload")
-    async upload(@UploadedFiles('file') files: Array<Express.Multer.File>, @CurrentUser() queueResponse: QueueResponse) {
-        
+    async upload(@UploadedFiles('file') files: Array<Express.Multer.File>, @CurrentUser() user: any) {
         if (!files) {
             throw new BadRequestError('No file were uploaded')
         }
 
-        if(queueResponse.error){
-            throw new InternalServerError(queueResponse.error.message)
-        }
-
-        if(!queueResponse.user){
-            throw new InternalServerError("An error occurred")
-        }
         let filePath = "";
         for (let file of files ){
             if (file.mimetype == "audio/mpeg") {
-                filePath = urljoin(this.dirMusic, queueResponse.user.id, uuid.v4() + ".mp3");
+                filePath = urljoin(this.dirMusic, user.id, uuid.v4() + ".mp3");
             } else if(file.mimetype == "image/jpeg"){
-                filePath = urljoin(this.dirCover, queueResponse.user.id, uuid.v4() + ".jpg");
+                filePath = urljoin(this.dirCover, user.id, uuid.v4() + ".jpg");
             } else {
                 throw new BadRequestError('File type not supported')
             }
