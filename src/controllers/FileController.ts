@@ -1,5 +1,4 @@
-import { JsonController, Post, UploadedFiles, UseBefore, BadRequestError, InternalServerError, Authorized, CurrentUser } from "routing-controllers"
-import { Response } from 'express'
+import { JsonController, Post, UploadedFiles, BadRequestError, InternalServerError, Authorized, CurrentUser } from "routing-controllers"
 import config from '../config'
 import filesystem from 'fs'
 import uuid from "uuid"
@@ -15,16 +14,20 @@ export class FileController {
 
     @Post("upload")
     async upload(@UploadedFiles('file') files: Array<Express.Multer.File>, @CurrentUser() queueResponse: QueueResponse) {
+        
         if (!files) {
             throw new BadRequestError('No file were uploaded')
         }
-        if(queueResponse.error) throw new InternalServerError(queueResponse.error.message)
 
-        if(!queueResponse.user) throw new InternalServerError("An error occurred")
+        if(queueResponse.error){
+            throw new InternalServerError(queueResponse.error.message)
+        }
 
+        if(!queueResponse.user){
+            throw new InternalServerError("An error occurred")
+        }
+        let filePath = "";
         for (let file of files ){
-            let filePath = "";
-
             if (file.mimetype == "audio/mpeg") {
                 filePath = urljoin(this.dirMusic, queueResponse.user.id, uuid.v4() + ".mp3");
             } else if(file.mimetype == "image/jpeg"){
@@ -39,7 +42,7 @@ export class FileController {
                 throw new InternalServerError('An error occurred while register the file')
             }
         }
-        return 'uploaded'
+        return {filePath: filePath}
     }
 
     private registerFile(filePath: string, file: Express.Multer.File) {

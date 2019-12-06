@@ -6,7 +6,7 @@ export class DefaultController {
 
     @Get("ping")
     ping(@Req() req: Request) {
-        return req.connection.remoteAddress;
+        return "pong";
     }
 
     @Post("check")

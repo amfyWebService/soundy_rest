@@ -11,7 +11,7 @@ import mLogger from 'morgan';
 import { CustomErrorHandler } from './core/middleware/CustomErrorHandler';
 
 
-class App {
+export class App {
   public app: Application;
   public upload: multer.Instance;
 
