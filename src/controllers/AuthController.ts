@@ -1,6 +1,6 @@
 import { JsonController, Post, BodyParam, Body } from "routing-controllers";
 import MqService from "@/core/MqService";
-import { IsEmail, IsString, MinLength, IsDate, IsDateString } from 'class-validator';
+import { IsEmail, IsString, MinLength, IsDate, IsDateString, IsISO8601 } from 'class-validator';
 import BaseController from './BaseController';
 
 export class LoginBody {
@@ -20,7 +20,7 @@ export class RegisterBody {
     @MinLength(10)
     password: string;
 
-    @IsDateString()
+    @IsISO8601()
     birthday: Date;
 
     @IsString()
