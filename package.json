@@ -8,7 +8,7 @@
     "lint": "tslint --project \"tsconfig.json\"",
     "start:prod": "cross-env NODE_ENV=production node -r ./env -r module-alias/register ./dist/start.js",
     "start": "cross-env NODE_ENV=development nodemon --inspect --config \"./util/nodemon.json\"",
-    "test": "cross-env NODE_ENV=test jest --testTimeout=10000"
+    "test": "cross-env NODE_ENV=testing nodemon --config \"./util/nodemon.test.json\""
   },
   "repository": {
     "type": "git",
