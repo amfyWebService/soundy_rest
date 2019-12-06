@@ -34,16 +34,23 @@ class App {
 
         const token = action.request.headers["authorization"];
         const res: QueueResponse = await MqService.query("authenticate", token);
-        if(res.error) return false;
+        if (res.error) return false;
 
         return true
-    }
+      },
+      currentUserChecker: async (action: Action) => {
+        // here you can use request/response objects from action
+        // you need to provide a user object that will be injected in controller actions
+        // demo code:
+        const token = action.request.headers["authorization"];
+        return await MqService.query("authenticate", token);
+      }
     });
     this.upload = multer();
     MqService.init(config.AMQP_URL);
   }
 
-  setExpressConfig(){
+  setExpressConfig() {
     this.app.use(mLogger('dev'));
     //Allows us to receive requests with data in json format
     this.app.use(bodyParser.json({ limit: '50mb' }));
@@ -51,7 +58,7 @@ class App {
     this.app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
   }
 
-  run(){
+  run() {
     this.app.listen(config.port, () => {
       logger.info('Express server started on port: ' + config.port);
     });

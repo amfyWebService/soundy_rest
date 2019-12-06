@@ -34,4 +34,12 @@ export interface QueueResponse {
         code: string,
         message: string
     }
+    user?: {
+        id: string,
+        bio : string,
+        mail : string,
+        birthday : Date,
+        firstName: string,
+        lastName: string,
+    }
 }
