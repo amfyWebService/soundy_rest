@@ -4,7 +4,6 @@ import filesystem from 'fs'
 import uuid from "uuid"
 import path from "path";
 import urljoin from "url-join";
-import { QueueResponse } from '@/core/MqService'
 
 @JsonController("/")
 export class FileController {
@@ -14,7 +13,7 @@ export class FileController {
     @Post("upload")
     async upload(@UploadedFiles('file') files: Array<Express.Multer.File>, @CurrentUser() user: any) {
         if (!files) {
-            throw new BadRequestError('No file were uploaded')
+            throw new BadRequestError('No file was uploaded')
         }
 
         let filePath = "";
@@ -30,7 +29,7 @@ export class FileController {
             try {
                 await this.registerFile(filePath, file);
             } catch (e) {
-                throw new InternalServerError('An error occurred while register the file')
+                throw new InternalServerError('An error occurred while registering the file')
             }
         }
         return {filePath: filePath}
@@ -40,7 +39,6 @@ export class FileController {
         return new Promise((resolve, reject) => {
             filesystem.mkdir(path.dirname(filePath), { recursive: true }, (err) => {
                 if (err){
-                    //logger.error(`Error creating directory: ${err}`);
                     reject(err);
                 } else {
                     filesystem.writeFileSync(filePath, Buffer.from(new Uint8Array(file.buffer)));

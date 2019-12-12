@@ -1,7 +1,7 @@
-import MqService, { QueueResponse } from '@/core/MqService';
+import { QueueResponse } from '@/core/MqService';
 import { logger } from '@/shared';
 import { Logger } from 'winston';
-import { InternalServerError, BadRequestError, HttpError } from 'routing-controllers';
+import { InternalServerError, HttpError } from 'routing-controllers';
 
 export default class BaseController {
     protected logger: Logger = logger;
