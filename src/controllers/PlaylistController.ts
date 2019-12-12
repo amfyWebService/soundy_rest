@@ -11,8 +11,7 @@ export class PlaylistController extends BaseController {
             const res = await MqService.query("getPlaylistByID", {playlistID: id});
 
             return this.handleResponse(res, {
-                "Invalid ID supplied": 400,
-                "Album not found": 404
+                "entity_id_not_found" : 400
             });
         }
     }
@@ -23,8 +22,7 @@ export class PlaylistController extends BaseController {
             const res = await MqService.query("getPlaylistsByUserID", {userID: id});
 
             return this.handleResponse(res, {
-                "Invalid ID supplied": 400,
-                "User not found": 404
+                "entity_id_not_found" : 400
             });
         }
     }
