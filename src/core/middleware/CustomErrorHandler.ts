@@ -4,9 +4,9 @@ import {Middleware, ExpressErrorMiddlewareInterface} from "routing-controllers";
 export class CustomErrorHandler implements ExpressErrorMiddlewareInterface {
 
     error(error: any, request: any, response: any, next: (err: any) => any) {
-        console.log("do something...");
-        console.log(JSON.stringify(error));
-        console.log(error);
+        // console.log("do something...");
+        // console.log(JSON.stringify(error));
+        // console.log(error);
 
         next(null);
     }

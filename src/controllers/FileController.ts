@@ -4,6 +4,8 @@ import filesystem from 'fs'
 import uuid from "uuid"
 import path from "path";
 import urljoin from "url-join";
+import MqService, { QueueResponse } from '@/core/MqService';
+import { promises } from 'dns';
 
 @JsonController("/")
 export class FileController {
@@ -17,6 +19,7 @@ export class FileController {
         }
 
         let filePath = "";
+        let promises: Promise<QueueResponse>[] = [];
         for (let file of files ){
             if (file.mimetype == "audio/mpeg") {
                 filePath = urljoin(this.dirMusic, user.id, uuid.v4() + ".mp3");
@@ -28,11 +31,18 @@ export class FileController {
 
             try {
                 await this.registerFile(filePath, file);
+
+                if (file.mimetype == "audio/mpeg") {
+                    promises.push(MqService.query("createTrack", {link: path.basename(filePath)}));
+                } else if(file.mimetype == "image/jpeg"){
+                    filePath = urljoin(this.dirCover, user.id, uuid.v4() + ".jpg");
+                }
             } catch (e) {
                 throw new InternalServerError('An error occurred while registering the file')
             }
         }
-        return {filePath: filePath}
+
+        return promises;
     }
 
     private registerFile(filePath: string, file: Express.Multer.File) {

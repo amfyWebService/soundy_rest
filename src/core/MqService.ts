@@ -14,7 +14,7 @@ export default class MqService {
         this.defaultExchange = this.connection.declareExchange('soundy_exchange_goms');
     }
 
-    static async query<T extends QueueResponse>(queueName: string, data: any): Promise<QueueResponse|T> {
+    static async query<T extends QueueResponse>(queueName: string, data: any, currentUser?: any): Promise<QueueResponse|T> {
         if (!this.connection) throw Error("Service not initialized");
         
         let queue: amqp.Queue;
@@ -27,6 +27,10 @@ export default class MqService {
             logger.error("queue error : " + e);
             queue = this.connection.declareQueue(queueName, { durable: true });
             queue.bind(this.defaultExchange);
+        }
+
+        if(currentUser){
+            data.$_currentUser = currentUser;
         }
 
         const res: amqp.Message = await queue.rpc(JSON.stringify(data));

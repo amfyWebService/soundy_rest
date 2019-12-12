@@ -12,6 +12,10 @@ export default class BaseController {
 
     protected handleResponse(res: QueueResponse, mapErrorCodeToHttpCode: {[key: string]: number}): QueueResponse{
         if(res.error){
+            // add missing_argument error by default
+            mapErrorCodeToHttpCode["missing_argument"] = 400;
+            mapErrorCodeToHttpCode["forbidden"] = 403;
+
             const httpCode = mapErrorCodeToHttpCode[res.error.code];
             let error: HttpError;
             if(httpCode){
