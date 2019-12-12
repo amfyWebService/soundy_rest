@@ -1,29 +1,28 @@
-import { JsonController, Post, Res, UploadedFiles, UseBefore, BadRequestError, InternalServerError, Authorized } from "routing-controllers"
-import { Response } from 'express'
+import { JsonController, Post, UploadedFiles, BadRequestError, InternalServerError, Authorized, CurrentUser } from "routing-controllers"
 import config from '../config'
 import filesystem from 'fs'
 import uuid from "uuid"
 import path from "path";
 import urljoin from "url-join";
+import { QueueResponse } from '@/core/MqService'
 
 @JsonController("/")
-@Authorized()
 export class FileController {
     private dirMusic: string = urljoin(config.HOME_UPLOAD_DIR, "musics");
     private dirCover: string = urljoin(config.HOME_UPLOAD_DIR, "covers");
 
     @Post("upload")
-    async upload(@Res() res: Response, @UploadedFiles('file') files: Array<Express.Multer.File>) {
+    async upload(@UploadedFiles('file') files: Array<Express.Multer.File>, @CurrentUser() user: any) {
         if (!files) {
             throw new BadRequestError('No file were uploaded')
         }
-        for (let file of files ){
-            let filePath = "";
 
+        let filePath = "";
+        for (let file of files ){
             if (file.mimetype == "audio/mpeg") {
-                filePath = urljoin(this.dirMusic, uuid.v4() + ".mp3");
+                filePath = urljoin(this.dirMusic, user.id, uuid.v4() + ".mp3");
             } else if(file.mimetype == "image/jpeg"){
-                filePath = urljoin(this.dirCover, uuid.v4() + ".jpg");
+                filePath = urljoin(this.dirCover, user.id, uuid.v4() + ".jpg");
             } else {
                 throw new BadRequestError('File type not supported')
             }
@@ -31,10 +30,10 @@ export class FileController {
             try {
                 await this.registerFile(filePath, file);
             } catch (e) {
-                throw new InternalServerError('')
+                throw new InternalServerError('An error occurred while register the file')
             }
         }
-        return 'uploaded'
+        return {filePath: filePath}
     }
 
     private registerFile(filePath: string, file: Express.Multer.File) {
