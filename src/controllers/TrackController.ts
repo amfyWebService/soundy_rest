@@ -1,6 +1,6 @@
 import { JsonController, Post, Body } from "routing-controllers";
 import BaseController from './BaseController';
-import { IsString, IsInt, Min } from 'class-validator';
+import { IsString } from 'class-validator';
 import MqService from '@/core/MqService';
 
 export class addTrackBody{

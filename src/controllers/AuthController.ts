@@ -1,6 +1,6 @@
-import { JsonController, Post, BodyParam, Body } from "routing-controllers";
+import { JsonController, Post, Body } from "routing-controllers";
 import MqService from "@/core/MqService";
-import { IsEmail, IsString, MinLength, IsDate, IsDateString, IsISO8601 } from 'class-validator';
+import { IsEmail, IsString, MinLength, IsISO8601 } from 'class-validator';
 import BaseController from './BaseController';
 
 export class LoginBody {

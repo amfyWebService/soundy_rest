@@ -1,4 +1,4 @@
-import { JsonController, Get, Req, Controller, Body, Post } from "routing-controllers";
+import { JsonController, Get, Req, Body, Post } from "routing-controllers";
 import { Request } from "express"
 
 @JsonController("/")
