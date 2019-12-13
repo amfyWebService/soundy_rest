@@ -10,11 +10,12 @@ export default class BaseController {
     //     return MqService.query(queueName, data);
     // }
 
-    protected handleResponse(res: QueueResponse, mapErrorCodeToHttpCode: {[key: string]: number}): QueueResponse{
+    protected handleResponse(res: QueueResponse, mapErrorCodeToHttpCode: {[key: string]: number} = {}): QueueResponse{
         if(res.error){
             // add missing_argument error by default
             mapErrorCodeToHttpCode["missing_argument"] = 400;
             mapErrorCodeToHttpCode["forbidden"] = 403;
+            mapErrorCodeToHttpCode["entity_not_found"] = 404;
 
             const httpCode = mapErrorCodeToHttpCode[res.error.code];
             let error: HttpError;

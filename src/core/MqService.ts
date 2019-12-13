@@ -20,9 +20,7 @@ export default class MqService {
         let queue: amqp.Queue;
         try {
             queue = this.connection.declareQueue(queueName, { durable: true, noCreate: true });
-            console.log("ok ", queue.initialized);
             await queue.initialized;
-            console.log("ok 2 ", queue);
         } catch(e){
             logger.error("queue error : " + e);
             queue = this.connection.declareQueue(queueName, { durable: true });

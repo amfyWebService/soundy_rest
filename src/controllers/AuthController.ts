@@ -38,7 +38,6 @@ export class AuthController extends BaseController {
         @Body({ required: true, validate: true }) body: RegisterBody,
     ) {
         const res = await MqService.query("register", body);
-
         return this.handleResponse(res, {
             "user_already_exist": 400,
             "entity_validation_error": 400
