@@ -38,8 +38,9 @@ export class PlaylistController extends BaseController {
     }
 
     @Post()
-    async createPlaylist(@Body({ required: true, validate: true }) body : createPlaylistBody) {
-        const res = await MqService.query("createPlaylist", body);
+    async createPlaylist(@Body({ required: true, validate: true }) body : createPlaylistBody, @CurrentUser() user: any) {
+        
+        const res = await MqService.query("createPlaylist", {name: body.name, user: user});
 
         return this.handleResponse(res, {
         });

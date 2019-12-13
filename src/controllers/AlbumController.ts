@@ -1,5 +1,5 @@
 import BaseController from './BaseController';
-import { JsonController, Get, Param, Post, Body } from 'routing-controllers';
+import { JsonController, Get, Param, Post, Body, CurrentUser } from 'routing-controllers';
 import MqService from '@/core/MqService';
 import { IsString, MinLength } from 'class-validator';
 
@@ -38,8 +38,8 @@ export class AlbumController extends BaseController {
     }
 
     @Post()
-    async createAlbum(@Body({ required: true, validate: true }) body : createAlbumBody) {
-        const res = await MqService.query("createAlbum", body);
+    async createAlbum(@Body({ required: true, validate: true }) body : createAlbumBody, @CurrentUser() user: any) {
+        const res = await MqService.query("createAlbum", {name: body.name, user: user});
 
         return this.handleResponse(res, {
         });
