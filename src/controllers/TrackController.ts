@@ -1,4 +1,4 @@
-import { JsonController, Post, Body, CurrentUser, Get, Params, Param, Patch } from "routing-controllers";
+import { JsonController, Post, Body, CurrentUser, Get, Params, Param, Patch, Put } from "routing-controllers";
 import BaseController from './BaseController';
 import { IsString } from 'class-validator';
 import MqService from '@/core/MqService';
@@ -11,7 +11,7 @@ export class addTrackBody{
 @JsonController("/tracks")
 export class TrackController extends BaseController {
 
-    @Patch("/:id")
+    @Put("/:id")
     async updateTrack(
         @CurrentUser() user: any,
         @Param("id") id: string,

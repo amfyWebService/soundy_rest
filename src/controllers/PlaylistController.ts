@@ -42,7 +42,6 @@ export class PlaylistController extends BaseController {
         const res = await MqService.query("createPlaylist", body);
 
         return this.handleResponse(res, {
-            "missing_argument" : 400
         });
     }
 
@@ -51,8 +50,6 @@ export class PlaylistController extends BaseController {
         const res = await MqService.query("addTrackToPlaylist", body);
 
         return this.handleResponse(res, {
-            "missing_argument" : 400,
-            "entity_id_not_found" : 400,
             "music_already_in_playlist" : 400
         });
     }
