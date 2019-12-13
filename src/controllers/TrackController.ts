@@ -1,4 +1,4 @@
-import { JsonController, Post, Body, CurrentUser, Get, Params, Param } from "routing-controllers";
+import { JsonController, Post, Body, CurrentUser, Get, Params, Param, Patch } from "routing-controllers";
 import BaseController from './BaseController';
 import { IsString } from 'class-validator';
 import MqService from '@/core/MqService';
@@ -11,7 +11,7 @@ export class addTrackBody{
 @JsonController("/tracks")
 export class TrackController extends BaseController {
 
-    @Post("/:id")
+    @Patch("/:id")
     async updateTrack(
         @CurrentUser() user: any,
         @Param("id") id: string,
@@ -20,7 +20,6 @@ export class TrackController extends BaseController {
         const res = await MqService.query("updateTrack", {id: id, ...body}, user);
 
         return this.handleResponse(res, {
-            "entity_not_found": 404
         });
     }
 
@@ -34,7 +33,6 @@ export class TrackController extends BaseController {
         const res = await MqService.query("getTrack", {trackID: id}, user);
 
         return this.handleResponse(res, {
-            "entity_not_found": 404,
-        })
+        });
     }
 }

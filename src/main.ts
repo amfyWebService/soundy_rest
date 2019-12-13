@@ -60,7 +60,6 @@ export class App {
   }
 
   async getUserFromRequest(action: Action, toto: string) {
-    console.log("coucou", toto, new Date().toISOString());
     // if already loaded
     if (action.request.soundy_user) return action.request.soundy_user;
 
@@ -70,7 +69,6 @@ export class App {
     // get token and call service to verify token
     const token = action.request.headers["authorization"];
     const res: QueueResponse = await MqService.query("authenticate", { token: token });
-    console.log("bye", toto, new Date().toISOString());
     // handle response
     if (res.error) return false;
 

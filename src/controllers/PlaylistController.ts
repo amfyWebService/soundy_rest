@@ -1,30 +1,24 @@
 import BaseController from './BaseController';
-import { JsonController, Get, Param } from 'routing-controllers';
+import { JsonController, Get, Param, CurrentUser } from 'routing-controllers';
 import MqService from '@/core/MqService';
 
-@JsonController("/")
+@JsonController("/playlist")
 export class PlaylistController extends BaseController {
 
-    @Get("playlist/:id")
-    async getPlaylistByID(@Param("id") id: string) {
-        if (id != null && id != "") {
-            const res = await MqService.query("getPlaylistByID", {playlistID: id});
+    @Get("/:id")
+    async getPlaylistByID(@Param("id") id: string, @CurrentUser() user: any) {
+        const res = await MqService.query("getPlaylistByID", { playlistID: id }, user);
 
-            return this.handleResponse(res, {
-                "entity_id_not_found" : 400
-            });
-        }
+        return this.handleResponse(res, {
+        });
     }
 
-    @Get("playlist/user/:id")
-    async getPlaylistsByUserID(@Param("id") id: string) {
-        if (id != null && id != "") {
-            const res = await MqService.query("getPlaylistsByUserID", {userID: id});
+    @Get("/user/:id")
+    async getPlaylistsByUserID(@Param("id") id: string, @CurrentUser() user: any) {
+        const res = await MqService.query("getPlaylistsByUserID", { userID: id }, user);
 
-            return this.handleResponse(res, {
-                "entity_id_not_found" : 400
-            });
-        }
+        return this.handleResponse(res, {
+        });
     }
 
 }
