@@ -1,5 +1,5 @@
 import BaseController from './BaseController';
-import { JsonController, Get, Param, Post, Body, CurrentUser } from 'routing-controllers';
+import { JsonController, Get, Param, Post, Body, CurrentUser, Put } from 'routing-controllers';
 import MqService from '@/core/MqService';
 import { IsString, MinLength } from 'class-validator';
 
@@ -12,13 +12,9 @@ export class addTrackToAlbumBody {
     @IsString()
     @MinLength(10)
     trackID: string;
-
-    @IsString()
-    @MinLength(10)
-    albumID: string;
 }
 
-@JsonController("/album")
+@JsonController("/albums")
 export class AlbumController extends BaseController {
 
     @Get("/:id")
@@ -30,8 +26,9 @@ export class AlbumController extends BaseController {
     }
 
     @Get("/user/:id")
-    async getAlbumsByUserID(@Param("id") id: string) {
-        const res = await MqService.query("getAlbumsByUserID", { userID: id });
+    async getAlbumsByUserID(@Param("id") id: string, @CurrentUser() user: any) {
+        let userID = id === "me" ? user._id : id;
+        const res = await MqService.query("getAlbumsByUserID", { userID: userID });
 
         return this.handleResponse(res, {
         });
@@ -45,9 +42,9 @@ export class AlbumController extends BaseController {
         });
     }
 
-    @Post("/track")
-    async addTrackToAlbum(@Body({ required: true, validate: true }) body : addTrackToAlbumBody) {
-        const res = await MqService.query("addTrackToAlbum", body);
+    @Put("/:album_id/track")
+    async addTrackToAlbum(@Param("album_id") albumId: string, @Body({ required: true, validate: true }) body : addTrackToAlbumBody) {
+        const res = await MqService.query("addTrackToAlbum", {trackID: body.trackID, albumID: albumId});
 
         return this.handleResponse(res, {
             "music_already_in_album" : 400
